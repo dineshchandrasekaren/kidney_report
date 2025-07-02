@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>சிறுநீரக நோய்க்கான உணவு முறை</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Latha&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A tabbed, dashboard-style Single-Page Application. This structure was chosen to logically separate the different components of the diet plan (Patient Summary, Meal Schedule, Food Lists, Recipes, Guidelines), making it easier for the user to navigate and find specific information quickly without scrolling through a long document. The main sections are: முகப்பு (Dashboard), உணவு அட்டவணை (Meal Plan), உணவு வகைகள் (Food Categories with searchable lists), குறிப்புகள் (Guidelines), 15-நாள் உணவுத் திட்டம் (15-Day Meal Plan), தவிர்க்க வேண்டிய உணவுகள் (Avoid Food), மன ஆரோக்கியம் (Mental Health), and ஒரே உணவுத் திட்டம் (Consistent Daily Meal Plan). Each major section now includes a toggle to view the original raw text of the corresponding page(s) from the source report, providing both interactive and direct textual access. A new toggle has been added to display the corresponding raw image(s) for each section. A language toggle has been added to switch all content between Tamil and English. A PDF download link has been added to the header for easy access to the full report. This task-oriented design enhances usability significantly compared to a linear document while preserving raw data access, supporting multilingual access, and providing full document access. -->
+    <!-- Visualization & Content Choices: 
+        - Patient Summary (முகப்பு): Goal: Inform. Method: Styled cards for patient data and a Chart.js Bar Chart to visualize key nutritional targets (Calories, Protein). Justification: A visual chart makes the abstract numbers of the diet goals more tangible and easier to understand at a glance.
+        - Food Lists (உணவு வகைகள்): Goal: Organize & Compare. Method: A searchable list for different food categories based on potassium levels. Interaction: A live search input filters the lists. Justification: This is the primary interactive element, allowing users to quickly check if a food is permitted, which is a common and critical task for a patient on a restrictive diet.
+        - Meal Plan & Guidelines: Goal: Inform. Method: Structured HTML content using cards and lists. Justification: Clear, readable text formatting is sufficient and most effective for this type of information.
+        - 15-Day Meal Plan: Goal: Inform & Organize. Method: Daily cards displaying meal times, food, calories, description, and quantity. Justification: Provides a structured, day-by-day view of a sample long-term plan, making it easy to follow.
+        - Avoid Food: Goal: Inform. Method: Dedicated list of foods to avoid. Justification: Provides quick, focused access to critical restrictions.
+        - Mental Health: Goal: Inform. Method: Structured text content with habits and exercises. Justification: Addresses a holistic view of patient well-being, providing actionable general advice.
+        - Consistent Daily Meal Plan: Goal: Illustrate a repetitive structure. Method: Sample daily meal plan. Justification: Fulfills user request for a "same food daily" plan, with necessary disclaimers about variety.
+        - Raw Text Display: Goal: Provide direct access to source. Method: Toggle button to reveal pre-formatted text content for each section, now including a reference to the original source page(s). Justification: Addresses the user's need for both interactive exploration and raw data reference, with improved traceability.
+        - Raw Image Display: Goal: Provide direct visual access to source. Method: Toggle button to reveal original image(s) corresponding to the section's content. Justification: Offers visual verification and context from the original document.
+        - Language Toggle: Goal: Provide multilingual access. Method: Button to switch between Tamil and English content. Justification: Enhances accessibility and broadens the user base.
+        - PDF Download Link: Goal: Provide full report access. Method: Prominent button in the header. Justification: Allows users to download the original document for offline viewing or printing.
+        - Library/Method: Chart.js for visualization. All other elements are structured HTML, Tailwind CSS, and vanilla JavaScript for interactivity (tab switching, search filter, raw text toggling, raw image toggling, language toggling).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Latha', 'Inter', sans-serif;
+            background-color: #F9F7F3;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            color: #1E40AF;
+            border-bottom-color: #1E40AF;
+            background-color: #DBEAFE;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        .raw-content-container {
+            display: none;
+            background-color: #f0f4f8;
+            border-left: 4px solid #60A5FA;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        .raw-text-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .raw-image-content img {
+            width: 100%;
+            height: auto;
+            max-width: 800px; /* Limit image width for better readability */
+            margin: 1rem auto;
+            display: block;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .raw-toggle-button {
+            background-color: #E0E7FF;
+            color: #4338CA;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: inline-flex; /* Use inline-flex to sit next to each other */
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 0.5rem; /* Space between buttons */
+            margin-top: 0.5rem;
+        }
+        .raw-toggle-button:hover {
+            background-color: #C7D2FE;
+        }
+        .language-toggle-button {
+            background-color: #A78BFA; /* Purple */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .language-toggle-button:hover {
+            background-color: #8B5CF6; /* Darker purple */
+        }
+        .download-button {
+            background-color: #EF4444; /* Red */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none; /* Remove underline for links */
+        }
+        .download-button:hover {
+            background-color: #DC2626; /* Darker Red */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
+
+        <header class="text-center mb-8">
+            <h1 id="appTitle" class="text-3xl md:text-4xl font-bold text-blue-900">சிறுநீரக நோய்க்கான உணவு முறை</h1>
+            <p id="appSubtitle" class="text-lg text-gray-600 mt-2">உங்கள் தனிப்பயனாக்கப்பட்ட ஊட்டச்சத்து வழிகாட்டி</p>
+            <div class="flex flex-wrap justify-center gap-4 mt-4">
+                <button onclick="toggleLanguage()" class="language-toggle-button">மொழி மாற்று: English</button>
+                <a href="https://res.cloudinary.com/dnxix5bau/image/upload/v1751441866/kidney_diet_mnfjtc.pdf" target="_blank" class="download-button">
+                    <span id="downloadButtonText">முழு அறிக்கையைப் பதிவிறக்குக</span> ⬇️
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                <!-- Tabs Navigation -->
+                <div class="border-b border-gray-200 mb-6 overflow-x-auto">
+                    <nav class="-mb-px flex flex-nowrap gap-x-2 sm:gap-x-4" aria-label="Tabs">
+                        <button id="tabButtonDashboard" onclick="changeTab('dashboard')" class="tab-button active text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">📊 முகப்பு</button>
+                        <button id="tabButtonMealPlan" onclick="changeTab('meal_plan')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">🗓️ தினசரி அட்டவணை</button>
+                        <button id="tabButtonFoodCategories" onclick="changeTab('food_categories')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">🥕 உணவு வகைகள்</button>
+                        <button id="tabButtonAvoidFood" onclick="changeTab('avoid_food')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">🚫 தவிர்க்க வேண்டிய உணவுகள்</button>
+                        <button id="tabButton15DayPlan" onclick="changeTab('15_day_plan')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">📅 15-நாள் திட்டம்</button>
+                        <button id="tabButtonConsistentPlan" onclick="changeTab('consistent_plan')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">🔄 ஒரே உணவுத் திட்டம்</button>
+                        <button id="tabButtonMentalHealth" onclick="changeTab('mental_health')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">🧘 மன ஆரோக்கியம்</button>
+                        <button id="tabButtonGuidelines" onclick="changeTab('guidelines')" class="tab-button text-sm sm:text-base font-medium border-b-2 border-transparent px-3 py-3 text-gray-500 hover:text-blue-700 hover:border-gray-300 rounded-t-lg whitespace-nowrap">📝 குறிப்புகள்</button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div>
+                    <!-- Dashboard / முகப்பு -->
+                    <div id="dashboard" class="tab-content active">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Patient Details -->
+                            <div class="bg-blue-50 rounded-xl p-6">
+                                <h3 id="patientDetailsTitle" class="text-xl font-semibold text-blue-800 mb-4">👤 நோயாளி விவரங்கள்</h3>
+                                <div id="patientDetails" class="space-y-3 text-gray-700"></div>
+                            </div>
+                            <!-- Dietary Goals -->
+                            <div class="bg-green-50 rounded-xl p-6">
+                                <h3 id="dietaryGoalsTitle" class="text-xl font-semibold text-green-800 mb-4">🎯 பரிந்துரைக்கப்பட்ட அளவு</h3>
+                                <div id="dietaryGoals" class="space-y-3 text-gray-700"></div>
+                                <div class="chart-container mt-6">
+                                    <canvas id="goalsChart"></canvas>
+                                </div>
+                                <p id="chartCaption" class="text-xs text-center text-gray-500 mt-2">தினசரி ஊட்டச்சத்து இலக்குகளின் காட்சி பிரதிநிதித்துவம்.</p>
+                            </div>
+                        </div>
+                         <div class="mt-6 bg-yellow-50 rounded-xl p-6">
+                            <h3 id="mainIntroTitle" class="text-xl font-semibold text-yellow-800 mb-2">முக்கிய குறிப்பு</h3>
+                            <p id="mainIntro" class="text-gray-700 leading-relaxed"></p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            <button onclick="toggleRawContent('rawTextDashboardContainer', 'text')" class="raw-toggle-button">
+                                <span class="toggle-icon">📄</span> <span id="rawTextDashboardButtonText">மூல உரையை காட்டு/மறை</span>
+                            </button>
+                            <button onclick="toggleRawContent('rawImageDashboardContainer', 'image')" class="raw-toggle-button">
+                                <span class="toggle-icon">🖼️</span> <span id="rawImageDashboardButtonText">மூலப் படத்தைக் காட்டு/மறை</span>
+                            </button>
+                        </div>
+                        <div id="rawTextDashboardContainer" class="raw-content-container">
+                            <pre class="raw-text-content"></pre>
+                        </div>
+                        <div id="rawImageDashboardContainer" class="raw-content-container raw-image-content"></div>
+                    </div>
+
+                    <!-- Meal Plan / உணவு அட்டவணை -->
+                    <div id="meal_plan" class="tab-content">
+                        <h3 id="mealPlanSectionTitle" class="text-2xl font-semibold text-gray-800 mb-4">தினசரி உணவுத் திட்டம்</h3>
+                        <p id="mealPlanSectionDescription" class="mb-6 text-gray-600">உங்கள் தினசரி உணவை நிர்வகிக்க உதவும் அட்டவணை இது. கொடுக்கப்பட்ட அளவுகளைப் பின்பற்றுவது அவசியம்.</p>
+                        <div id="mealPlanContainer" class="space-y-6"></div>
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            <button onclick="toggleRawContent('rawTextMealPlanContainer', 'text')" class="raw-toggle-button">
+                                <span class="toggle-icon">📄</span> <span id="rawTextMealPlanButtonText">மூல உரையை காட்டு/மறை</span>
+                            </button>
+                            <button onclick="toggleRawContent('rawImageMealPlanContainer', 'image')" class="raw-toggle-button">
+                                <span class="toggle-icon">🖼️</span> <span id="rawImageMealPlanButtonText">மூலப் படத்தைக் காட்டு/மறை</span>
+                            </button>
+                        </div>
+                        <div id="rawTextMealPlanContainer" class="raw-content-container">
+                            <pre class="raw-text-content"></pre>
+                        </div>
+                        <div id="rawImageMealPlanContainer" class="raw-content-container raw-image-content"></div>
+                    </div>
+
+                    <!-- Food Categories / உணவு வகைகள் -->
+                    <div id="food_categories" class="tab-content">
+                        <h3 id="foodCategoriesSectionTitle" class="text-2xl font-semibold text-gray-800 mb-2">உணவு வழிகாட்டி</h3>
+                        <p id="foodCategoriesSectionDescription" class="mb-6 text-gray-600">பொட்டாசியம் அளவின் அடிப்படையில் அனுமதிக்கப்பட்ட மற்றும் தவிர்க்க வேண்டிய உணவுகளின் பட்டியல்கள். தேடல் பெட்டியைப் பயன்படுத்தி குறிப்பிட்ட உணவைத் தேடலாம்.</p>
+                        <div class="mb-6">
+                            <input type="text" id="foodSearch" onkeyup="filterFoodLists()" placeholder="உணவுப் பெயரைத் தேடவும் (எ.கா., கேரட்)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div id="foodCategoriesContainer" class="space-y-8"></div>
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            <button onclick="toggleRawContent('rawTextFoodCategoriesContainer', 'text')" class="raw-toggle-button">
+                                <span class="toggle-icon">📄</span> <span id="rawTextFoodCategoriesButtonText">மூல உரையை காட்டு/மறை</span>
+                            </button>
+                            <button onclick="toggleRawContent('rawImageFoodCategoriesContainer', 'image')" class="raw-toggle-button">
+                                <span class="toggle-icon">🖼️</span> <span id="rawImageFoodCategoriesButtonText">மூலப் படத்தைக் காட்டு/மறை</span>
+                            </button>
+                        </div>
+                        <div id="rawTextFoodCategoriesContainer" class="raw-content-container">
+                            <pre class="raw-text-content"></pre>
+                        </div>
+                        <div id="rawImageFoodCategoriesContainer" class="raw-content-container raw-image-content"></div>
+                    </div>
+
+                    <!-- Avoid Food / தவிர்க்க வேண்டிய உணவுகள் -->
+                    <div id="avoid_food" class="tab-content">
+                        <h3 id="avoidFoodSectionTitle" class="text-2xl font-semibold text-gray-800 mb-2">🚫 தவிர்க்க வேண்டிய உணவுகள்</h3>
+                        <p id="avoidFoodSectionDescription" class="mb-6 text-gray-600">சிறுநீரக ஆரோக்கியத்தைப் பராமரிக்க கண்டிப்பாக தவிர்க்க வேண்டிய உணவுகளின் பட்டியல்.</p>
+                        <div id="avoidFoodContainer" class="space-y-4"></div>
+                    </div>
+
+                    <!-- 15-Day Plan / 15-நாள் உணவுத் திட்டம் -->
+                    <div id="15_day_plan" class="tab-content">
+                        <h3 id="dayPlanSectionTitle" class="text-2xl font-semibold text-gray-800 mb-4">15-நாள் சிறுநீரக உணவுத் திட்டம்</h3>
+                        <p id="dayPlanSectionDescription" class="mb-6 text-gray-600"></p>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                            <p id="dayPlanDisclaimer" class="font-bold"></p>
+                            <p id="dayPlanDisclaimerContent" class="text-sm mt-2"></p>
+                        </div>
+                        <div id="dayPlanContainer" class="space-y-8"></div>
+                        <!-- No raw text/image toggle for this section as it's a generated feature -->
+                    </div>
+
+                    <!-- Consistent Daily Plan / ஒரே உணவுத் திட்டம் -->
+                    <div id="consistent_plan" class="tab-content">
+                        <h3 id="consistentPlanSectionTitle" class="text-2xl font-semibold text-gray-800 mb-4">🔄 ஒரே மாதிரியான தினசரி உணவுத் திட்டம்</h3>
+                        <p id="consistentPlanSectionDescription" class="mb-6 text-gray-600"></p>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                            <p id="consistentPlanDisclaimer" class="font-bold"></p>
+                            <p id="consistentPlanDisclaimerContent" class="text-sm mt-2"></p>
+                        </div>
+                        <div id="consistentPlanContainer" class="space-y-8"></div>
+                    </div>
+
+                    <!-- Mental Health / மன ஆரோக்கியம் -->
+                    <div id="mental_health" class="tab-content">
+                        <h3 id="mentalHealthSectionTitle" class="text-2xl font-semibold text-gray-800 mb-4">🧘 மன ஆரோக்கியம்</h3>
+                        <p id="mentalHealthSectionDescription" class="mb-6 text-gray-600"></p>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg" role="alert">
+                            <p id="mentalHealthDisclaimer" class="font-bold"></p>
+                            <p id="mentalHealthDisclaimerContent" class="text-sm mt-2"></p>
+                        </div>
+                        <div id="mentalHealthContainer" class="space-y-8"></div>
+                    </div>
+
+                    <!-- Guidelines / குறிப்புகள் -->
+                    <div id="guidelines" class="tab-content">
+                         <h3 id="guidelinesSectionTitle" class="text-2xl font-semibold text-gray-800 mb-4">பொதுவான குறிப்புகள் மற்றும் செய்முறைகள்</h3>
+                         <p id="guidelinesSectionDescription" class="mb-6 text-gray-600">உங்கள் ஆரோக்கியத்தை பராமரிக்க உதவும் முக்கியமான குறிப்புகள், மாற்று உணவுகள் மற்றும் எளிய சமையல் குறிப்புகள்.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div id="generalNotes"></div>
+                            <div id="recipesContainer"></div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-6">
+                            <button onclick="toggleRawContent('rawTextGuidelinesContainer', 'text')" class="raw-toggle-button">
+                                <span class="toggle-icon">📄</span> <span id="rawTextGuidelinesButtonText">மூல உரையை காட்டு/மறை</span>
+                            </button>
+                            <button onclick="toggleRawContent('rawImageGuidelinesContainer', 'image')" class="raw-toggle-button">
+                                <span class="toggle-icon">🖼️</span> <span id="rawImageGuidelinesButtonText">மூலப் படத்தைக் காட்டு/மறை</span>
+                            </button>
+                        </div>
+                        <div id="rawTextGuidelinesContainer" class="raw-content-container">
+                            <pre class="raw-text-content"></pre>
+                        </div>
+                        <div id="rawImageGuidelinesContainer" class="raw-content-container raw-image-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p id="footerText1">இந்த உணவுத் திட்டம் ஒரு வழிகாட்டி மட்டுமே. உங்கள் மருத்துவர் அல்லது உணவியல் நிபுணரின் ஆலோசனையைப் பெறவும்.</p>
+            <p id="footerText2">&copy; 2025 ஊட்டச்சத்து மற்றும் உணவியல் துறை.</p>
+        </footer>
+    </div>
+
+    <script>
+        const reportData = {
+            currentLang: 'ta', // Default language
+            languages: {
+                ta: {
+                    appTitle: 'சிறுநீரக நோய்க்கான உணவு முறை',
+                    appSubtitle: 'உங்கள் தனிப்பயனாக்கப்பட்ட ஊட்டச்சத்து வழிகாட்டி',
+                    toggleLangButton: 'மொழி மாற்று: English',
+                    downloadButtonText: 'முழு அறிக்கையைப் பதிவிறக்குக',
+                    tabDashboard: '📊 முகப்பு',
+                    tabMealPlan: '🗓️ தினசரி அட்டவணை',
+                    tabFoodCategories: '🥕 உணவு வகைகள்',
+                    tabAvoidFood: '🚫 தவிர்க்க வேண்டிய உணவுகள்',
+                    tab15DayPlan: '📅 15-நாள் திட்டம்',
+                    tabConsistentPlan: '🔄 ஒரே உணவுத் திட்டம்',
+                    tabMentalHealth: '🧘 மன ஆரோக்கியம்',
+                    tabGuidelines: '📝 குறிப்புகள்',
+                    patientDetailsTitle: '👤 நோயாளி விவரங்கள்',
+                    dietaryGoalsTitle: '🎯 பரிந்துரைக்கப்பட்ட அளவு',
+                    chartCaption: 'தினசரி ஊட்டச்சத்து இலக்குகளின் காட்சி பிரதிநிதித்துவம்.',
+                    rawTextButtonText: 'மூல உரையை காட்டு/மறை',
+                    rawImageButtonText: 'மூலப் படத்தைக் காட்டு/மறை',
+                    mainIntroTitle: 'முக்கிய குறிப்பு',
+                    mealPlanSectionTitle: 'தினசரி உணவுத் திட்டம்',
+                    mealPlanSectionDescription: 'உங்கள் தினசரி உணவை நிர்வகிக்க உதவும் அட்டவணை இது. கொடுக்கப்பட்ட அளவுகளைப் பின்பற்றுவது அவசியம்.',
+                    foodCategoriesSectionTitle: 'உணவு வழிகாட்டி',
+                    foodCategoriesSectionDescription: 'பொட்டாசியம் அளவின் அடிப்படையில் அனுமதிக்கப்பட்ட மற்றும் தவிர்க்க வேண்டிய உணவுகளின் பட்டியல்கள். தேடல் பெட்டியைப் பயன்படுத்தி குறிப்பிட்ட உணவைத் தேடலாம்.',
+                    foodSearchPlaceholder: 'உணவுப் பெயரைத் தேடவும் (எ.கா., கேரட்)',
+                    avoidFoodSectionTitle: '🚫 தவிர்க்க வேண்டிய உணவுகள்',
+                    avoidFoodSectionDescription: 'சிறுநீரக ஆரோக்கியத்தைப் பராமரிக்க கண்டிப்பாக தவிர்க்க வேண்டிய உணவுகளின் பட்டியல்.',
+                    dayPlanSectionTitle: '15-நாள் சிறுநீரக உணவுத் திட்டம்',
+                    dayPlanSectionDescription: 'இந்த 15-நாள் உணவுத் திட்டம் ஒரு மாதிரி வழிகாட்டி மட்டுமே. உங்கள் மருத்துவ நிபுணரின் ஆலோசனையின்றி இதை பின்பற்ற வேண்டாம். இது சிறுநீரக ஆரோக்கியத்தை மேம்படுத்தவும் கிரியாட்டினின் அளவைக் குறைக்கவும் உதவும் உணவுப் பரிந்துரைகளின் பொதுவான கட்டமைப்பை வழங்குகிறது.',
+                    dayPlanDisclaimer: 'முக்கிய அறிவிப்பு:',
+                    dayPlanDisclaimerContent: 'இது ஒரு பொதுவான உணவுத் திட்ட மாதிரி மட்டுமே. உங்கள் தனிப்பட்ட உடல்நிலை மற்றும் மருத்துவ தேவைகளுக்கு ஏற்ப, ஒரு தகுதிவாய்ந்த உணவியல் நிபுணர் அல்லது மருத்துவரிடம் ஆலோசனை பெற்று, தனிப்பயனாக்கப்பட்ட உணவுத் திட்டத்தைப் பெறுவது மிக அவசியம். மருத்துவ ஆலோசனையின்றி இந்த திட்டத்தைப் பின்பற்ற வேண்டாம்.',
+                    consistentPlanSectionTitle: '🔄 ஒரே மாதிரியான தினசரி உணவுத் திட்டம்',
+                    consistentPlanSectionDescription: 'இந்த மாதிரித் திட்டம், ஒவ்வொரு நாளும் ஒரே மாதிரியான உணவுகளைக் கொண்ட ஒரு பொதுவான கட்டமைப்பைக் காட்டுகிறது. இது ஒரு மாதிரி மட்டுமே, தனிப்பயனாக்கப்பட்ட திட்டத்திற்கு மருத்துவரை அணுகவும். உணவு வகைகளில் பன்முகத்தன்மை முக்கியம் என்பதை நினைவில் கொள்ளவும்.',
+                    consistentPlanDisclaimer: 'முக்கிய அறிவிப்பு:',
+                    consistentPlanDisclaimerContent: 'இந்த திட்டம் ஒரு பொதுவான மாதிரி மட்டுமே. ஒரே மாதிரியான உணவுகளை நீண்ட காலத்திற்கு உட்கொள்வது ஊட்டச்சத்து குறைபாடுகளுக்கு வழிவகுக்கும். உங்கள் தனிப்பட்ட உடல்நிலை மற்றும் மருத்துவ தேவைகளுக்கு ஏற்ப, ஒரு தகுதிவாய்ந்த உணவியல் நிபுணர் அல்லது மருத்துவரிடம் ஆலோசனை பெற்று, தனிப்பயனாக்கப்பட்ட உணவுத் திட்டத்தைப் பெறுவது மிக அவசியம். மருத்துவ ஆலோசனையின்றி இந்த திட்டத்தைப் பின்பற்ற வேண்டாம்.',
+                    mentalHealthSectionTitle: '🧘 மன ஆரோக்கியம் மற்றும் மன அழுத்தத்தைக் குறைக்கும் பழக்கவழக்கங்கள்',
+                    mentalHealthSectionDescription: 'சிறுநீரக நோயுடன் வாழும்போது மன ஆரோக்கியத்தைப் பராமரிப்பது மிகவும் முக்கியம். மன அழுத்தத்தைக் குறைப்பதற்கும், மன நலனை மேம்படுத்துவதற்கும் சில பழக்கவழக்கங்கள் மற்றும் பயிற்சிகள் இங்கே கொடுக்கப்பட்டுள்ளன.',
+                    mentalHealthDisclaimer: 'பொதுவான ஆலோசனை:',
+                    mentalHealthDisclaimerContent: 'இந்த தகவல்கள் பொதுவான வழிகாட்டுதல்கள் மட்டுமே. மனநலப் பிரச்சினைகளுக்கு, ஒரு தகுதிவாய்ந்த மனநல நிபுணர் அல்லது மருத்துவரிடம் ஆலோசனை பெறுவது அவசியம். இது மருத்துவ ஆலோசனைக்கு மாற்றாகாது.',
+                    guidelinesSectionTitle: 'பொதுவான குறிப்புகள் மற்றும் செய்முறைகள்',
+                    guidelinesSectionDescription: 'உங்கள் ஆரோக்கியத்தை பராமரிக்க உதவும் முக்கியமான குறிப்புகள், மாற்று உணவுகள் மற்றும் எளிய சமையல் குறிப்புகள்.',
+                    footerText1: 'இந்த உணவுத் திட்டம் ஒரு வழிகாட்டி மட்டுமே. உங்கள் மருத்துவர் அல்லது உணவியல் நிபுணரின் ஆலோசனையைப் பெறவும்.',
+                    footerText2: '© 2025 ஊட்டச்சத்து மற்றும் உணவியல் துறை.',
+                    dayLabels: ['நாள் 1', 'நாள் 2', 'நாள் 3', 'நாள் 4', 'நாள் 5', 'நாள் 6', 'நாள் 7', 'நாள் 8', 'நாள் 9', 'நாள் 10', 'நாள் 11', 'நாள் 12', 'நாள் 13', 'நாள் 14', 'நாள் 15'],
+                    mealTimeLabels: {
+                        'காலை': 'காலை', 'மதியம்': 'மதியம்', 'மாலை': 'மாலை', 'இரவு': 'இரவு'
+                    },
+                    mealDetailsLabels: {
+                        'food': 'உணவு', 'calories': 'கலோரி', 'description': 'விளக்கம்', 'quantity': 'அளவு'
+                    },
+                    patientDetails: [
+                        { label: 'பெயர்', value: 'திரு. Gnanasekaran' },
+                        { label: 'வயது', value: '59 / ஆண்' },
+                        { label: 'உயரம்', value: '161 செ.மீ' },
+                        { label: 'எடை', value: '81 கிகி' },
+                        { label: 'விரும்பத்தக்க எடை', 'value': '62 கிகி' },
+                        { label: 'மருத்துவமனை எண்', value: '276690' },
+                        { label: 'வார்டு', value: 'Dr. Hep' },
+                        { label: 'தேதி', value: '01/07/2025' }
+                    ],
+                    mainIntro: "சிறுநீரக நோய்களில் இருந்து பாதிக்கப்படும் நபர்கள் கிறியாட்டினின் முதல் நிலையில் இருந்து சிறுநீரக மாற்றம் வரை எந்த நிலை இருந்தாலும், சிறந்த ஊட்டச்சத்து பராமரிப்பு அவசியம். இது நோயின் விரைவு வளர்ச்சியைத் தடுக்க, பசிப்பாட்டைத் தடுக்கும், தூக்கத்தை மேம்படுத்தும், நோயெதிர்ப்பு சக்தியை அதிகரிக்கும், மற்றும் சிறுநீரக மாற்றத்திற்கு முன்னோடி தயாரிப்பையும் மேம்படுத்தும்.",
+                    dietaryGoals: {
+                        'சத்து': 1600,
+                        'புரதம்': 40,
+                        'பொட்டாசியம்': 40
+                    },
+                    goalUnits: {
+                        'சத்து': 'கிலோகலோரி',
+                        'புரதம்': 'கிராம்',
+                        'பொட்டாசியம்': 'மில்லி சமமான'
+                    },
+                    mealPlan: [
+                        { time: 'காலை 6:00 மணி', items: ['பால் – 100 மி.லி'] },
+                        { time: 'காலை 8:00 மணி', items: ['இட்லி – 3', 'தோசை – 3', 'உப்புமா – ½ கப்', 'காய்கறி சட்னி – ¼ கப்', 'முட்டை வெண்கரு – 2 (அ) முட்டை'] },
+                        { time: 'காலை 10:00 மணி', items: ['சிவமணி/ஜவ்வரிசி – 25 கிராம்'] },
+                        { time: 'மதிய உணவு 12:30 மணி', items: ['சாதம் கப் (அறிசி ½)', 'உணவு 1 மாறு', 'காய்கறி ½ கப்'] },
+                        { time: 'மாலை 4:00 மணி', items: ['தைர் 50', 'பால் 100 மி.லி.', 'அவல்/பொறி – 25 கிராம்', '(அ) ஜவ்வரிசி (உபயோகத்தில்)', 'சப்பாத்தி 2', '(கோதுமை மாவு – 75 கிராம்)', '(ஜவ்வரிசி மாவு – 25 கிராம்)', 'உணவு 1 மாறு', 'காய்கறி ½ கப்'] },
+                        { time: 'இரவு 7:00 மணி', items: ['பால் 100 மி.லி.', 'ஜவ்வரிசி'] }
+                    ],
+                    foodCategories: [
+                        {
+                            title: 'பொட்டாசியம் அளவு வாரியாக காய்கறிகள்',
+                            description: 'பிரிவு 3ல் உள்ள காய்கறிகளை பொட்டாசியம் நீக்கிய பின்பு பயன்படுத்த வேண்டும்.',
+                            sections: [
+                                { title: '📘 பிரிவு 1 (0 – 100 மி.கி.) - குறைந்த பொட்டாசியம்', items: ['சவ் சவ்', 'வெந்தயக்கீரை', 'பீட்ரூட்', 'சிவப்பு முள்ளங்கி', 'சுரைக்காய்', 'அவரைக்காய்', 'வெள்ளரிக்காய்', 'மொச்சைக்காய்', 'நூல்கோல்', 'மாங்காய்', 'பட்டாணி', 'பீர்க்கங்காய்', 'புடலங்காய்'] },
+                                { title: '📘 பிரிவு 2 (101 – 200 மி.கி.) - மிதமான பொட்டாசியம்', items: ['முட்டைகோஸ்', 'கேரட்', 'சின்ன வெங்காயம்', 'வெள்ளை முள்ளங்கி', 'பாகற்காய்', 'கத்தரிக்காய்', 'பீன்ஸ்', 'வெண்டைக்காய்', 'வாழைப்பூ', 'வாழைக்காய்', 'பூசணிக்காய்', 'பச்சைத் தக்காளி'] },
+                                { title: '📘 பிரிவு 3 (201 மி.கி. மற்றும் அதற்கு மேல்) - அதிக பொட்டாசியம்', items: ['கொத்தமல்லி தழை', 'முருங்கைக் கீரை', 'பசலைக்கீரை', 'சேப்பங்கிழங்கு', 'சர்க்கரைவள்ளிக்கிழங்கு', 'மரவள்ளிக்கிழங்கு', 'சேணைக்கிழங்கு', 'முருங்கைக்காய்', 'பப்பாளிக்காய்'] }
+                            ]
+                        },
+                        {
+                            title: 'பழங்கள்',
+                            description: 'கீழ்கண்ட பழங்களில் குறைந்த அளவு பொட்டாசியம் கொண்டதால் வாரத்தில் 1 அல்லது 2 முறை 100 கிராம் அளவில் பரிமாறலாம்.',
+                            sections: [
+                                { title: '🍎 அனுமதிக்கப்பட்ட பழங்கள்', items: ['ஆப்பிள்', 'கொய்யா', 'பப்பாளி', 'பேரிக்காய்', 'அன்னாசி'] }
+                            ]
+                        },
+                        {
+                            title: 'தவிர்க்க வேண்டியவை',
+                            description: 'பின்வரும் பொருட்களில் மிக அதிக அளவில் பொட்டாசியம் மற்றும் சோடியம் இருப்பதால் தவிர்க்க வேண்டும்.',
+                             sections: [
+                                { title: '❌ கண்டிப்பாக தவிர்க்க வேண்டியவை', items: ['கொட்டை வகைகள்', 'வெல்லம்', 'இளநீர்', 'காபி', 'தேநீர்', 'கொக்கோ பவுடர்', 'சாக்லேட் முதலியன', 'உப்பு', 'சமையல் சோடா', 'பேக்கிங் பவுடர்', 'பதப்படுத்தப்பட்ட உணவுகள்', 'சீஸ் வகைகள்', 'ஈஸ்ட்', 'உப்பிட்ட சிப்ஸ்', 'பாப்கார்ன் மற்றும் பிஸ்கட்', 'அப்பளம்', 'ஊறுகாய்', 'சாஸ்', 'குளிர்பானங்கள்', 'சூப் கட்டிகள்', 'சாக்லேட் பானங்கள்', 'போர்ன்விட்டா முதலியன', 'அஜினோமோட்டோ', 'கருவாடு', 'உலர்ந்த பழங்கள்'] }
+                            ]
+                        }
+                    ],
+                    guidelines: {
+                        notesTitle: "📝 பொதுவான குறிப்புகள்",
+                        notes: [
+                            "தேவையான அளவு கலோரி சத்து உணவில் பெறுதல் அவசியம்.",
+                            "குறிப்பிட்ட அளவு உப்பு மட்டுமே சமையலுக்கு பயன்படுத்தப்பட வேண்டும்.",
+                            "குறிப்பிட்ட அளவு நீர் ஆதாரம் உட்கொள்ளுதல் அவசியம்.",
+                            "மசாலா பொருட்களை குறைந்த அளவிலேயே பயன்படுத்த வேண்டும்.",
+                            "ஜவ்வரிசி தினமும் உட்கொள்ளுவதன் மூலம் தேவையான சத்தையும் பெறலாம்."
+                        ],
+                        potassiumRemovalTitle: "🧂 பொட்டாசியத்தை நீக்கும் முறை",
+                        potassiumRemoval: [
+                            "முறை 1: காய்கறியை நன்றாக கழுவி, தோல் சீவி, சிறு துண்டுகளாக வெட்டி, வெதுவெதுப்பான நீரில் 2 அல்லது 3 மணி நேரம் ஊற வைக்கவும். பின் அந்நீரை வடிகட்டவும். அதிகமான நீர் சேர்த்து காய்கறியை வேகவைத்து, அந்நீரை வடிகட்டவும்.",
+                            "முறை 2: காய்கறியை கழுவி, தோல் சீவி, சிறு துண்டுகளாக்கி, அதிகமான நீரில் வேகவைத்து, அந்நீரை வடிகட்டவும்."
+                        ],
+                        proteinExchangeTitle: "🍽️ புரத மாற்று",
+                        proteinExchanges: [
+                            { item: "1 முட்டைக்கு பதிலாக", options: ["35 கிராம் மீன்", "35 கிராம் ஆட்டிறைச்சி", "25 கிராம் கோழி இறைச்சி", "35 கிராம் பன்னீர்"] },
+                            { item: "50 கிராம் மீனிற்கு பதிலாக", options: ["50 கிராம் ஆட்டிறைச்சி", "50 கிராம் பன்னீர்", "35 கிராம் கோழி இறைச்சி"] }
+                        ]
+                    },
+                    recipes: [
+                         {
+                            title: 'ஜவ்வரிசி அடை (4 பங்கு)',
+                            ingredients: ['ஜவ்வரிசி - 50 கிராம்', 'அரிசி மாவு - 50 கிராம்', 'வெங்காயம் - 20 கிராம்', 'எண்ணெய் - 30 மி.லி.'],
+                            method: [
+                                'ஜவ்வரிசியை வறுத்து கரகரப்பான மாவாக அரைத்துக் கொள்ளவும். அதனுடன் அரிசி மாவை கலக்கவும்.',
+                                'மாவுடன் தண்ணீர் சேர்த்து (தோராயமாக 12 மேஜை கரண்டி தண்ணீர்) பிசைந்து கொள்ளவும்.',
+                                'அதனை உருண்டைகளாக பிரித்து கொள்ளவும். அதனை அடையாக தட்டி சூடான தோசைக்கல்லில் இட்டு வேக வைக்கவும்.',
+                                'இரண்டு புறமும் எண்ணெய் இட்டு வெந்தவுடன் சூடாகப் பரிமாறலாம்.'
+                            ]
+                        },
+                         {
+                            title: 'ஜவ்வரிசி ஊத்தப்பம் (3 பங்கு)',
+                            ingredients: ['ஜவ்வரிசி மாவு 50 கிராம்', 'அரிசி மாவு 50 கிராம்', 'தயிர் 25 மி.லி.', 'வெங்காயம் - 10 கிராம்', 'பச்சைமிளகாய் - 2 கிராம்', 'எண்ணெய் -20 மி.லி.'],
+                            method: [
+                                 'அரிசி மாவு மற்றும் ஜவ்வரிசியை நன்கு வறுத்து, அதனுடன் தயிர் சேர்க்கவும். நறுக்கிய வெங்காயம் மற்றும் பச்சைமிளகாயை அதனுடன் கலக்கி, அரைமணி நேரம் ஊற வைக்கவும்.',
+                                 'அடுப்பில் தோசைக் கல்லை வைத்து எண்ணெய் தடவி ஒரு கரண்டி மாவை தோசையாக இடவும்.',
+                                 'தோசையை சுற்றி எண்ணெய் ஊற்றி திருப்பி போடவும். மீண்டும் தோசையை சுற்றி எண்ணெய் ஊற்றி வெந்தவுடன் சூடாக பரிமாறலாம்.'
+                            ]
+                        }
+                    ],
+                },
+                en: {
+                    appTitle: 'Kidney Disease Diet Plan',
+                    appSubtitle: 'Your Personalized Nutritional Guide',
+                    toggleLangButton: 'Switch Language: தமிழ்',
+                    downloadButtonText: 'Download Full Report',
+                    tabDashboard: '📊 Dashboard',
+                    tabMealPlan: '🗓️ Daily Schedule',
+                    tabFoodCategories: '🥕 Food Categories',
+                    tabAvoidFood: '🚫 Foods to Avoid',
+                    tab15DayPlan: '📅 15-Day Plan',
+                    tabConsistentPlan: '🔄 Consistent Daily Plan',
+                    tabMentalHealth: '🧘 Mental Health',
+                    tabGuidelines: '📝 Guidelines',
+                    patientDetailsTitle: '👤 Patient Details',
+                    dietaryGoalsTitle: '🎯 Recommended Intake',
+                    chartCaption: 'Visual representation of daily nutritional targets.',
+                    rawTextButtonText: 'Show/Hide Raw Text',
+                    rawImageButtonText: 'Show/Hide Raw Image',
+                    mainIntroTitle: 'Important Note',
+                    mealPlanSectionTitle: 'Daily Meal Plan',
+                    mealPlanSectionDescription: 'This schedule helps you manage your daily meals. It is essential to follow the given quantities.',
+                    foodCategoriesSectionTitle: 'Food Guide',
+                    foodCategoriesSectionDescription: 'Lists of allowed and restricted foods based on potassium levels. Use the search box to find specific foods.',
+                    foodSearchPlaceholder: 'Search for food (e.g., Carrot)',
+                    avoidFoodSectionTitle: '🚫 Foods to Avoid',
+                    avoidFoodSectionDescription: 'A list of foods that must be strictly avoided to maintain kidney health.',
+                    dayPlanSectionTitle: '15-Day Kidney Diet Plan',
+                    dayPlanSectionDescription: 'This 15-day meal plan is a sample guide only. Do not follow it without consulting your healthcare professional. It provides a general structure of dietary recommendations that may support kidney health and reduce creatinine levels.',
+                    dayPlanDisclaimer: 'Important Notice:',
+                    dayPlanDisclaimerContent: 'This is a general sample diet plan only. It is crucial to consult a qualified dietitian or medical professional to obtain a personalized diet plan tailored to your individual health condition and medical needs. Do not follow this plan without medical advice.',
+                    consistentPlanSectionTitle: '🔄 Consistent Daily Meal Plan',
+                    consistentPlanSectionDescription: 'This sample plan demonstrates a general structure with consistent meals each day. This is a sample only; consult a doctor for a personalized plan. Remember that dietary variety is important.',
+                    consistentPlanDisclaimer: 'Important Notice:',
+                    consistentPlanDisclaimerContent: 'This plan is a general sample only. Consuming the same foods for extended periods can lead to nutritional deficiencies. It is crucial to consult a qualified dietitian or medical professional to obtain a personalized diet plan tailored to your individual health condition and medical needs. Do not follow this plan without medical advice.',
+                    mentalHealthSectionTitle: '🧘 Mental Health and Stress Reduction Habits',
+                    mentalHealthSectionDescription: 'Maintaining mental health is crucial when living with kidney disease. Here are some habits and exercises to reduce stress and improve mental well-being.',
+                    mentalHealthDisclaimer: 'General Advice:',
+                    mentalHealthDisclaimerContent: 'This information provides general guidance only. For mental health concerns, it is essential to consult a qualified mental health professional or doctor. This is not a substitute for medical advice.',
+                    guidelinesSectionTitle: 'General Guidelines and Recipes',
+                    guidelinesSectionDescription: 'Important tips, food exchanges, and simple recipes to help maintain your health.',
+                    footerText1: 'This diet plan is for guidance only. Please consult your doctor or dietitian.',
+                    footerText2: '© 2025 Department of Nutrition and Dietetics.',
+                    dayLabels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12', 'Day 13', 'Day 14', 'Day 15'],
+                    mealTimeLabels: {
+                        'காலை': 'Morning', 'மதியம்': 'Afternoon', 'மாலை': 'Evening', 'இரவு': 'Night'
+                    },
+                    mealDetailsLabels: {
+                        'food': 'Food', 'calories': 'Calories', 'description': 'Description', 'quantity': 'Quantity'
+                    },
+                    patientDetails: [
+                        { label: 'Name', value: 'Mr. Gnanasekaran' },
+                        { label: 'Age', value: '59 / Male' },
+                        { label: 'Height', value: '161 cm' },
+                        { label: 'Weight', value: '81 kg' },
+                        { label: 'Desired Weight', 'value': '62 kg' },
+                        { label: 'Hospital ID', value: '276690' },
+                        { label: 'Ward', value: 'Dr. Hep' },
+                        { label: 'Date', value: '01/07/2025' }
+                    ],
+                    mainIntro: "For individuals affected by kidney disease, from the initial stage of creatinine to kidney transplant, excellent nutritional care is essential. This helps prevent rapid disease progression, reduce appetite loss, improve sleep, boost immunity, and enhance preparation for kidney transplant.",
+                    dietaryGoals: {
+                        'Calories': 1600,
+                        'Protein': 40,
+                        'Potassium': 40
+                    },
+                    goalUnits: {
+                        'Calories': 'kcal',
+                        'Protein': 'grams',
+                        'Potassium': 'mEq'
+                    },
+                    mealPlan: [
+                        { time: '6:00 AM', items: ['Milk – 100 ml'] },
+                        { time: '8:00 AM', items: ['Idli – 3', 'Dosa – 3', 'Upma – ½ cup', 'Vegetable Chutney – ¼ cup', 'Egg White – 2 (or) Egg'] },
+                        { time: '10:00 AM', items: ['Sago/Javvarisi – 25 grams'] },
+                        { time: '12:30 PM (Lunch)', items: ['Rice – ½ cup', 'Non-veg Exchange – 1', 'Vegetable – ½ cup'] },
+                        { time: '4:00 PM', items: ['Curd – 50', 'Milk – 100 ml', 'Poha/Pori – 25 grams', '(or) Javvarisi (unsalted)', 'Chapathi – 2', '(Wheat Flour – 75 grams)', '(Javvarisi Flour – 25 grams)', 'Non-veg Exchange – 1', 'Vegetable – ½ cup'] },
+                        { time: '7:00 PM (Dinner)', items: ['Milk – 100 ml', 'Javvarisi'] }
+                    ],
+                    foodCategories: [
+                        {
+                            title: 'Vegetables by Potassium Level',
+                            description: 'Vegetables in Section 3 should only be used after potassium removal.',
+                            sections: [
+                                { title: '📘 Section 1 (0 – 100 mg) - Low Potassium', items: ['Chayote', 'Fenugreek Leaves', 'Beetroot', 'Red Radish', 'Bottle Gourd', 'Broad Beans', 'Cucumber', 'Hyacinth Beans', 'Kohlrabi', 'Mango', 'Peas', 'Ridge Gourd', 'Snake Gourd'] },
+                                { title: '📘 Section 2 (101 – 200 mg) - Moderate Potassium', items: ['Cabbage', 'Carrot', 'Small Onion', 'White Radish', 'Bitter Gourd', 'Brinjal', 'Beans', 'Ladies Finger', 'Banana Flower', 'Banana Stem', 'Pumpkin', 'Green Chili'] },
+                                { title: '📘 Section 3 (201 mg and above) - High Potassium', items: ['Coriander Leaves', 'Drumstick Leaves', 'Spinach', 'Colocasia', 'Sweet Potato', 'Tapioca', 'Elephant Foot Yam', 'Drumstick', 'Papaya (raw)'] }
+                            ]
+                        },
+                        {
+                            title: 'Fruits',
+                            description: 'The following fruits have low potassium and can be served in 100-gram portions once or twice a week.',
+                            sections: [
+                                { title: '🍎 Allowed Fruits', items: ['Apple', 'Guava', 'Papaya', 'Pear', 'Pineapple'] }
+                            ]
+                        },
+                        {
+                            title: 'Foods to Avoid',
+                            description: 'The following items are very high in potassium and sodium and should be avoided.',
+                             sections: [
+                                { title: '❌ Strictly to be Avoided', items: ['Nuts', 'Jaggery', 'Tender Coconut Water', 'Coffee', 'Tea', 'Cocoa Powder', 'Chocolates etc.', 'Salt', 'Baking Soda', 'Baking Powder', 'Processed Foods', 'Cheese varieties', 'Yeast', 'Salted Chips', 'Popcorn and Biscuits', 'Appalam', 'Pickles', 'Sauces', 'Soft Drinks', 'Soup Cubes', 'Chocolate Drinks', 'Bournvita etc.', 'Ajinomoto', 'Dried Fish', 'Dried Fruits'] }
+                            ]
+                        }
+                    ],
+                    guidelines: {
+                        notesTitle: "📝 General Notes",
+                        notes: [
+                            "It is essential to obtain the necessary calorie content in the diet.",
+                            "Only the specified amount of salt should be used for cooking.",
+                            "It is essential to consume the specified amount of fluids.",
+                            "Spices should be used in minimal quantities.",
+                            "Consuming Javvarisi daily can provide the necessary energy."
+                        ],
+                        potassiumRemovalTitle: "🧂 Method to Remove Potassium from Vegetables",
+                        potassiumRemoval: [
+                            "Method 1: Wash vegetables thoroughly, peel, cut into small pieces, and soak in lukewarm water for 2 or 3 hours. Then drain the water. Cook the vegetables with plenty of water, then drain the water.",
+                            "Method 2: Wash vegetables, peel, cut into small pieces, cook in plenty of water, then drain the water."
+                        ],
+                        proteinExchangeTitle: "🍽️ Protein Exchange",
+                        proteinExchanges: [
+                            { item: "Instead of 1 egg", options: ["35 grams Fish", "35 grams Mutton", "25 grams Chicken", "35 grams Paneer"] },
+                            { item: "Instead of 50 grams Fish", options: ["50 grams Mutton", "50 grams Paneer", "35 grams Chicken"] }
+                        ]
+                    },
+                    recipes: [
+                         {
+                            title: 'Javvarisi Adai (4 servings)',
+                            ingredients: ['Javvarisi - 50 grams', 'Rice Flour - 50 grams', 'Onion - 20 grams', 'Oil - 30 ml.'],
+                            method: [
+                                'Roast Javvarisi and grind it into a coarse powder. Mix it with rice flour.',
+                                'Add water (approximately 12 tablespoons of water) to the mixture and knead it.',
+                                'Divide it into balls. Flatten them into Adai and cook on a hot dosa griddle.',
+                                'Add oil on both sides and serve hot once cooked.'
+                            ]
+                        },
+                         {
+                            title: 'Javvarisi Oothappam (3 servings)',
+                            ingredients: ['Javvarisi Flour 50 grams', 'Rice Flour 50 grams', 'Curd 25 ml.', 'Onion - 10 grams', 'Green Chili - 2 grams', 'Oil -20 ml.'],
+                            method: [
+                                 'Roast rice flour and Javvarisi well, then add curd. Mix with chopped onion and green chili, and soak for half an hour.',
+                                 'Heat a dosa griddle, grease it with oil, and pour one ladle of batter.',
+                                 'Pour oil around the dosa and flip it. Once cooked, serve hot.'
+                            ]
+                        }
+                    ],
+                }
+            },
+            rawTextContent: {
+                dashboard: `--- மூல ஆதாரம்: Untitled document.txt (பக்கம் 2) ---
+
+ஊட்டச்சத்து மற்றும் உணவியல் துறை
+சிறுநீரக நோய்க்கான உணவு முறை
+________________
+
+
+பெயர்: Mr. Gnanasekaran
+உயரம் (செ.மீ.): 161 cm
+வயது: 59 / Male
+எடை (கி.கி.): 81 kg
+மருத்துவமனைய எண்: 276690
+விலகித்துக்கொண்ட எடை: 62 kg
+வார்டு: Dr. Hep
+தேதி: 01/07/25
+________________
+
+
+சிறுநீரக நோய்களில் இருந்து பாதிக்கப்படும் நபர்கள் கிறியாட்டினின் முதல் நிலையில் இருந்து சிறுநீரக மாற்றம் வரை எந்த நிலை இருந்தாலும், சிறந்த ஊட்டச்சத்து பராமரிப்பு அவசியம்.
+இது நோயின் விரைவு வளர்ச்சியைத் தடுக்க, பசிப்பாட்டைத் தடுக்கும், தூக்கத்தை மேம்படுத்தும், நோயெதிர்ப்பு சக்தியை அதிகரிக்கும், மற்றும் சிறுநீரக மாற்றத்திற்கு முன்னோடி தயாரிப்பையும் மேம்படுத்தும்.
+________________
+
+
+பரிந்துரைக்கப்பட்ட அளவு உணவு:
+* சத்து: 1600 கிலோகலோரி
+
+* புரதம்: 40 கிராம்
+
+* பொட்டாசியம்: 40 மில்லி சபமானா
+
+________________
+
+
+திட்டமிட்ட மற்றும் அனுமதிக்கப்பட்ட உணவு அளவு:
+அளவு = அளவீடு
+1 கப் = 200 மில்லி லிட்டர் (மி.லி)
+1 தேக்கரண்டி = 5 மில்லி லிட்டர் (மி.லி)
+1 மேசைக்கரண்டி = 15 மில்லி லிட்டர் (மி.லி)
+________________
+
+
+உணவு அட்டவணை:
+காலை 6.00 மணி
+* பால் – 100 மி.லி
+
+காலை உணவு 8.00 மணி
+* இட்லி – 3
+
+* தோசை – 3
+
+* உப்புமா – ½ கப்
+
+* காய்கறி சட்னி – ¼ கப்
+
+முட்டை வெண்கரு – 2 (அ) முட்டை`,
+                meal_plan: `--- மூல ஆதாரம்: Untitled document.txt (பக்கம் 3) ---
+
+உணவு நேர அட்டவணை
+காலை 10.00 மணி
+✍️ சிவமணி/ஜவ்வரிசி(not sure) – 25 கிராம்
+________________
+
+
+மதிய உணவு 12.30 மணி
+* சாதம் கப் (அறிசி ½)
+
+* உணவு 1 மாறு
+
+* காய்கறி ½ கப்
+
+________________
+
+
+மாலை 4.00 மணி
+* தைர் 50
+
+* பால் 100 மி.லி.
+
+* அவல்/பொறி – 25 கிராம்
+
+* (அ) ஜவ்வரிசி (உபயோகத்தில்)
+
+* சப்பாத்தி 2
+
+* (கோதுமை மாவு – 75 கிராம்)
+
+* (ஜவ்வரிசி மாவு – 25 கிராம்)
+
+* உணவு 1 மாறு
+
+* காய்கறி ½ கப்
+
+________________
+
+
+இரவு உணவு 7.00 மணி
+* பால் 100 மி.லி.
+
+* ஜவ்வரிசி
+
+________________
+
+
+ஒரு நாளுக்கு அனுமதிக்கப்பட்ட அளவு
+* உப்பு – 3 கிராம்
+
+* சக்கரை – 15 கிராம்
+
+* எண்ணெய் – 15 மில்லி லிட்டர்
+
+* நீர் ஆதாரம் – மில்லி லிட்டர்
+
+✍️ சக்கரை: உளுந்து
+________________
+
+
+தானிய மாற்று:
+அறிசி 100 கிராம் பதிலாக கீழ்கண்டவற்றில் ஏதேனும் ஒன்றை எடுத்துக்கொள்ளலாம்:
+* 75 கிராம் கோதுமை மாவுடன்
+
+* 25 கிராம் ஜவ்வரிசி மாவு சேர்க்கலாம்
+
+(எ.கா.) சப்பாத்தி – 3 (அ)
+60 கிராம் ரவை (எ.கா.) உப்புமா – 3/4 கப் (அ)
+எண்ணெய்க்காக 1/4 தேக்கரண்டி உள்ள பார்ட் தண்டு (அ)
+________________
+
+
+அறிசி, அரிசி மாவு, பொறி (அ) அவல்`,
+                food_categories: `--- மூல ஆதாரம்: Untitled document.txt (பக்கம் 4-5) ---
+
+🍽️ அளவு மாற்று:
+பொருள் | அளவு
+---|---
+முட்டை | 1க்கு பதிலாக
+மீன் | 35 கிராம்
+ஆட்டிறைச்சி | 35 கிராம்
+கோழி இறைச்சி | 25 கிராம்
+பன்னீர் | 35 கிராம்
+🔹 எதிலும் ஒன்று எடுத்துக்கொள்ளலாம்.
+🔸 50 கிராம் மீனிற்கு பதிலாக
+* ஆட்டிறைச்சி – 50 கிராம்
+
+* பன்னீர் – 50 கிராம்
+
+* கோழி இறைச்சி – 35 கிராம்
+எதிலும் ஒன்றை எடுத்துக்கொள்ளலாம்.
+
+________________
+
+
+📝 குறிப்பு:
+* தேவையான அளவு கலோரி சத்து உணவில் பெறுதல் அவசியம்.
+
+* குழந்தைக்கு 50% பருமானது தரமான புரதமாகவும், சீரியள அளவில் எல்லா உணவுகளிலும் பசுந்தை அளிக்கப்படுதல் அவசியம்.
+
+* 1/2 கப் பருப்பு அல்லது 200 மில்லி லிட்டர் தைர் அல்லது பாலிற்றுப் பதிலாக வாரத்திற்கு ஒன்று அல்லது இரண்டு முறை எடுத்துக்கொள்ளலாம்.
+
+* குறிபிட்ட அளவு உப்பு மட்டுமே சமையலுக்கு பயன்படுத்தப்பட வேண்டும்.
+
+* குறிபிட்ட அளவு நீர் ஆதாரம் உட்கொள்ளுதல் அவசியம்.
+
+* மசாலா பொருட்களை குறைந்த அளவிலேயே பயன்படுத்த வேண்டும்.
+
+* சோடியம் மற்றும் பொட்டாசியம் அதிகம் உள்ள உணவுப் பொருட்களை தவிர்த்து வேண்டும்.
+
+* குழந்தை இளவையிலும் சிறிய அளவு சகையான உணவை உட்கொள்ளுதல் மூலம் திருப்பியள அளவில் உடலுக்கு சத்து அளிக்கப்படும்.
+
+* ஜவ்வரிசி தினமும் உட்கொள்ளுவதன் மூலம் தேவையான சத்தையும் பெறலாம்.
+
+________________
+
+
+100 கிராம் காய்கறியில் உள்ள பொட்டாசியம் சத்து
+3 பிரிவுகளாக வகைப்படுத்தப்பட்டுள்ளது.
+பிரிவு 3ல் உள்ள காய்கறிகளை பொட்டாசியம் நீக்கிய பின்பு பயன்படுத்த வேண்டும்.
+________________
+
+
+📘 பிரிவு 1 (0 – 100 மி.கி.)
+சவ் சவ்,
+வெந்தயக்கீரை,
+பீட்ரூட்,
+சிவப்பு முள்ளங்கி,
+சுரைக்காய்,
+அவரைக்காய்,
+வெள்ளரிக்காய்,
+மொச்சைக்காய்,
+நூல்கோல்,
+மாங்காய்,
+பட்டாணி,
+பீர்க்கங்காய்,
+புடலங்காய்
+________________
+
+
+📘 பிரிவு 2 (101 – 200 மி.கி.)
+முட்டைகோஸ்,
+கேரட்,
+சின்ன வெங்காயம்,
+வெள்ளை முள்ளங்கி,
+பாகற்காய்,
+கத்தரிக்காய்,
+பீன்ஸ்,
+வெண்டைக்காய்,
+வாழைப்பூ,
+வாழைக்காய்,
+பூசணிக்காய்,
+பச்சைத் தக்காளி
+________________
+
+
+📘 பிரிவு 3 (201 மி.கி. மற்றும் அதற்கு மேல்)
+கொத்தமல்லி தழை,
+முருங்கைக் கீரை,
+பசலைக்கீரை,
+சேப்பங்கிழங்கு,
+சர்க்கரைவள்ளிக்கிழங்கு,
+மரவள்ளிக்கிழங்கு,
+சேணைக்கிழங்கு,
+முருங்கைக்காய்,
+பப்பாளிக்காய்
+________________
+
+
+🧂 பொட்டாசியத்தை காய்கறிகளில் இருந்து நீக்கும் முறை :
+➤ முறை – 1 :
+காய்கறியை நன்றாக கழுவி, தோல் சீவி, சிறு துண்டுகளாக வெட்டி,
+வெதுவெதுப்பான நீரில் 2 அல்லது 3 மணி நேரம் ஊற வைக்கவும்.
+பின் அந்நீரை வடிகட்டவும்.
+அதிகமான நீர் சேர்த்து காய்கறியை வேகவைத்து, அந்நீரை வடிகட்டவும்.
+➤ முறை – 2 :
+காய்கறியை கழுவி, தோல் சீவி, சிறு துண்டுகளாக்கி, அதிகமான நீரில் வேகவைத்து,
+அந்நீரை வடிகட்டவும்.
+________________
+
+
+🍎 பழங்கள்
+அனைத்து பழமும் பழச்சாறும் அதிக பொட்டாசியம்
+கீழ்கண்ட பழங்களில் குறைந்த அளவு கொண்டதால் வாரத்தில் 1 அல்லது 2 முறை 100 கிராம் அளவில் பரிமாறலாம் :
+* ஆப்பிள்
+
+* கொய்யா
+
+* பப்பாளி
+
+* பேரிக்காய்
+
+* அன்னாசி
+
+________________
+
+
+❌ தவிர்க்கவேண்டியவை :
+* கொட்டை வகைகள்
+
+* வெல்லம்
+
+* இளநீர்
+
+* காபி
+
+* தேநீர்
+
+* கொக்கோ பவுடர்
+
+* சாக்லேட் முதலியன`,
+                guidelines: `--- மூல ஆதாரம்: Untitled document.txt (பக்கம் 6-7) ---
+
+சோடியம் அதிகம் உள்ள உணவுகள் : உப்பு, சமையல் சோடா, பேக்கிங் பவுடர்,
+பதப்படுத்தப்பட்ட உணவுகள், சீஸ் வகைகள், ஈஸ்ட், உப்பிட்ட சிப்ஸ், கொட்டைகள்,
+பாப்கார்ன் மற்றும் பிஸ்கட், அப்பளம், ஊறுகாய், சாஸ், குளிர்பானங்கள், சூப் கட்டிகள்,
+சாக்லேட் பானங்கள், போர்ன்விட்டா முதலியன, அஜினோமோட்டோ, கருவாடு, உலர்ந்த
+பழங்கள்.
+
+மிதமான சோடியம் உள்ள உணவுகள்
+
+கீழ்கண்டவற்றில் சோடியம் மிதமான அளவில் உள்ளதால் குறிப்பிட்ட அளவில்
+உட்கொள்ளலாம்.
+
+1. பால் மற்றும் தயிர்
+
+2. அனைத்து வகையான பயிறு மற்றும் பருப்புகள்
+
+3. காய்கறிகள் : அவரைக்காய், பச்சைத்தக்காளி, கொத்தமல்லி தழை, காலிஃபளவர்,
+
+பீட்ரூட், வெந்தயக்கீரை, மொச்சைக்காய், பருப்பு கீரை, நூல்கோல், முள்ளங்கி, லெட்ரூஸ்,
+மாங்காய், கேரட், பசலைக்கீரை, காராமணிக்காய், சிறுகீரை
+
+மற்றவை : கொத்தமல்லி, சீரகம், மஞ்சள், பேக்கிரி உணவுகள் மற்றும் வெல்லம்.
+
+1. ஜவ்வரிசி அடை (4 பங்கு)
+தேவையான பொருட்கள் :
+ஒரு பங்கிற்கான சத்து
+ஜவ்வரிசி - 50 கிராம்
+அரிசி மாவு - 50 கிராம்
+வெங்காயம் - 20 கிராம்
+எண்ணெய் - 30 மி.லி.
+
+உணவு வகைகள்
+
+கலோரி 157 கி.கலோரி
+
+புரதம் 0.9 கிராம்
+
+சோடியம் 27 மி.கிராம்
+
+பொட்டாசியம் 24 மி.கிராம்
+
+செய்முறை :
+
+* ஜவ்வரிசியை வறுத்து கரகரப்பான மாவாக அரைத்துக் கொள்ளவும். அதனுடன் அரிசி
+  மாவை கலக்கவும். மாவுடன் தண்ணீர் சேர்த்து (தோராயமாக 12 மேஜை கரண்டி தண்ணீர்)
+  பிசைந்து கொள்ளவும்.
+
+* அதனை உருண்டைகளாக பிரித்து கொள்ளவும். அதனை அடையாக தட்டி சூடான
+  தோசைக்கல்லில் இட்டு வேக வைக்கவும். இரண்டு புறமும் எண்ணெய் இட்டு வெந்தவுடன்
+  சூடாகப் பரிமாறலாம்.
+
+ஜவ்வரிசி ஊத்தப்பம் (3 பங்கு)
+தேவையான பொருட்கள் :
+ஜவ்வரிசி மாவு 50 கிராம்
+அரிசி மாவு 50 கிராம்
+தயிர் 25 மி.லி.
+
+வெங்காயம் - 10 கிராம்
+
+பச்சைமிளகாய் - 2 கிராம்
+எண்ணெய் -20 மி.லி.
+
+ஒரு பங்கிற்கான சத்து
+கலோரி - 182 கி.கலோரி
+
+புரதம் - 1.4 கிராம்
+சோடியம் - 5 மி.கி.
+பொட்டாசியம் 39 ..
+
+செய்முறை :
+
+அரிசி மாவு மற்றும் ஜவ்வரிசியை நன்கு வறுத்து, அதனுடன் தயிர் சேர்க்கவும். நறுக்கிய
+வெங்காயம் மற்றும் பச்சைமிளகாயை அதனுடன் கலக்கி, அரைமணி நேரம் ஊற வைக்கவும்.
+அடுப்பில் தோசைக் கல்லை வைத்து எண்ணெய் தடவி ஒரு கரண்டி மாவை தோசையாக
+இடவும். தோசையை சுற்றி எண்ணெய் ஊற்றி திருப்பி போடவும். மீண்டும் தோசையை சுற்றி
+எண்ணெய் ஊற்றி வெந்தவுடன் சூடாக பரிமாறலாம்.
+
+ஜவ்வரிசி உப்புமா (4 பங்கு)
+தேவையான பொருட்கள் :
+ஜவ்வரிசி மாவு 100 கிராம்
+பச்சைமிளகாய் 10 கிராம்
+வெங்காயம் - 50 கிராம்
+கருவேப்பிலை - சிறிதளவு
+
+எண்ணெய் 40 ..
+
+ஒரு பங்கிற்கான சத்து
+கலோரி 185 கிலோ கலோரி
+
+புரதம் 0.3 கிராம்
+
+சோடியம் -6.4 மி.கி.
+பொட்டாசியம் - 26 மி.கி.
+
+செய்முறை :
+
+வெங்காயம் மற்றும் பச்சைமிளகாயை நீளவாக்கில் அரிந்து கொள்ளவும். பின்,
+எண்ணெயை காய வைத்து வெங்காயம், பச்சைமிளகாய் மற்றும் கருவேப்பிலை இட்டு
+தாளிக்கவும். அதனுடன் ஜவ்வரிசி சேர்த்து வெந்தவுடன் சூடாக பரிமாறலாம்.
+
+ராலி, கம்பு தானியங்களை
+
+உணவியல் நிபுணரின் கையொப்பம்`
+            },
+            rawImageContent: {
+                dashboard: ['https://res.cloudinary.com/dnxix5bau/image/upload/v1751441234/2_hkjffn.jpg'], // Page 2
+                meal_plan: ['https://res.cloudinary.com/dnxix5bau/image/upload/v1751441233/3_qjm53q.jpg'], // Page 3
+                food_categories: [ // Page 4 and 5
+                    'https://res.cloudinary.com/dnxix5bau/image/upload/v1751441235/4_sjqkit.jpg',
+                    'https://res.cloudinary.com/dnxix5bau/image/upload/v1751441235/5_lopajj.jpg'
+                ],
+                guidelines: [ // Page 6 and 7
+                    'https://res.cloudinary.com/dnxix5bau/image/upload/v1751441234/6_tnp2ps.jpg',
+                    'https://res.cloudinary.com/dnxix5bau/image/upload/v1751441234/7_nq0vsw.jpg'
+                ]
+            },
+            dayPlanData: [] // This will be populated dynamically
+        };
+
+        // Populate 15-day plan data with placeholders
+        for (let i = 1; i <= 15; i++) {
+            const dayMeals = [
+                { time: 'காலை', food: 'பால் (100 மி.லி), இட்லி (3)', calories: 250, description: 'குறைந்த புரத காலை உணவு', quantity: 'காலை உணவு அட்டவணையைப் பார்க்கவும்' },
+                { time: 'மதியம்', food: 'சாதம் (1 கப்), காய்கறி (1/2 கப்)', calories: 400, description: 'மிதமான புரத மதிய உணவு', quantity: 'மதிய உணவு அட்டவணையைப் பார்க்கவும்' },
+                { time: 'மாலை', food: 'அவல் (25 கிராம்), பால் (100 மி.லி)', calories: 150, description: 'குறைந்த பொட்டாசியம் சிற்றுண்டி', quantity: 'மாலை உணவு அட்டவணையைப் பார்க்கவும்' },
+                { time: 'இரவு', food: 'சப்பாத்தி (2), காய்கறி (1/2 கப்)', calories: 350, description: 'குறைந்த புரத இரவு உணவு', quantity: 'இரவு உணவு அட்டவணையைப் பார்க்கவும்' }
+            ];
+            reportData.dayPlanData.push({ day: i, meals: dayMeals });
+        }
+
+        // English translations for dayPlanData
+        reportData.languages.en.dayPlanData = [];
+        for (let i = 1; i <= 15; i++) {
+            const dayMealsEn = [
+                { time: 'Morning', food: 'Milk (100ml), Idli (3)', calories: 250, description: 'Low protein breakfast', quantity: 'See meal schedule' },
+                { time: 'Afternoon', food: 'Rice (1 cup), Vegetable (1/2 cup)', calories: 400, description: 'Moderate protein lunch', quantity: 'See meal schedule' },
+                { time: 'Evening', food: 'Poha (25g), Milk (100ml)', calories: 150, description: 'Low potassium snack', quantity: 'See meal schedule' },
+                { time: 'Night', food: 'Chapathi (2), Vegetable (1/2 cup)', calories: 350, description: 'Low protein dinner', quantity: 'See meal schedule' }
+            ];
+            reportData.languages.en.dayPlanData.push({ day: i, meals: dayMealsEn });
+        }
+
+        // Consistent Daily Plan Data (Placeholder)
+        reportData.languages.ta.consistentDailyPlan = [
+            { time: 'காலை', food: 'பால் (100 மி.லி), இட்லி (3)', calories: 250, description: 'குறைந்த புரத காலை உணவு', quantity: 'காலை உணவு அட்டவணையைப் பார்க்கவும்' },
+            { time: 'மதியம்', food: 'சாதம் (1 கப்), காய்கறி (1/2 கப்)', calories: 400, description: 'மிதமான புரத மதிய உணவு', quantity: 'மதிய உணவு அட்டவணையைப் பார்க்கவும்' },
+            { time: 'மாலை', food: 'அவல் (25 கிராம்), பால் (100 மி.லி)', calories: 150, description: 'குறைந்த பொட்டாசியம் சிற்றுண்டி', quantity: 'மாலை உணவு அட்டவணையைப் பார்க்கவும்' },
+            { time: 'இரவு', food: 'சப்பாத்தி (2), காய்கறி (1/2 கப்)', calories: 350, description: 'குறைந்த புரத இரவு உணவு', quantity: 'இரவு உணவு அட்டவணையைப் பார்க்கவும்' }
+        ];
+        reportData.languages.en.consistentDailyPlan = [
+            { time: 'Morning', food: 'Milk (100ml), Idli (3)', calories: 250, description: 'Low protein breakfast', quantity: 'See meal schedule' },
+            { time: 'Afternoon', food: 'Rice (1 cup), Vegetable (1/2 cup)', calories: 400, description: 'Moderate protein lunch', quantity: 'See meal schedule' },
+            { time: 'Evening', food: 'Poha (25g), Milk (100ml)', calories: 150, description: 'Low potassium snack', quantity: 'See meal schedule' },
+            { time: 'Night', food: 'Chapathi (2), Vegetable (1/2 cup)', calories: 350, description: 'Low protein dinner', quantity: 'See meal schedule' }
+        ];
+
+        // Mental Health Data (Placeholder)
+        reportData.languages.ta.mentalHealthContent = [
+            {
+                title: 'ஆரோக்கியமான பழக்கவழக்கங்கள்',
+                items: [
+                    'போதுமான தூக்கம் (7-9 மணிநேரம்) பெறுவதை உறுதி செய்யவும்.',
+                    'சீரான மற்றும் பரிந்துரைக்கப்பட்ட உணவை தவறாமல் உட்கொள்ளவும்.',
+                    'போதுமான அளவு தண்ணீர் அருந்தி உடலை நீரேற்றமாக வைத்திருக்கவும்.',
+                    'நண்பர்கள் மற்றும் குடும்பத்தினருடன் சமூகத் தொடர்புகளைப் பேணவும்.',
+                    'உங்களுக்கு மகிழ்ச்சி தரும் பொழுதுபோக்குகளில் ஈடுபடவும்.'
+                ]
+            },
+            {
+                title: 'மன அழுத்தத்தைக் குறைக்கும் பயிற்சிகள்',
+                items: [
+                    'ஆழ்ந்த சுவாசப் பயிற்சிகள்: மெதுவாகவும் ஆழமாகவும் சுவாசிக்கவும், மனதை அமைதிப்படுத்தவும்.',
+                    'தியானம்: தினசரி சில நிமிடங்கள் தியானம் செய்ய முயற்சிக்கவும்.',
+                    'யோகா: உடல் மற்றும் மனதை தளர்த்த உதவும் யோகா பயிற்சிகளை மேற்கொள்ளவும்.',
+                    'நடைபயிற்சி: தினசரி 30 நிமிடங்கள் நடைபயிற்சி செய்வது மன அழுத்தத்தைக் குறைக்கும்.',
+                    'இசை கேட்பது: அமைதியான இசையைக் கேட்பது மனதை அமைதிப்படுத்த உதவும்.'
+                ]
+            }
+        ];
+        reportData.languages.en.mentalHealthContent = [
+            {
+                title: 'Healthy Habits',
+                items: [
+                    'Ensure adequate sleep (7-9 hours).',
+                    'Consistently follow a balanced and recommended diet.',
+                    'Stay hydrated by drinking enough water.',
+                    'Maintain social connections with friends and family.',
+                    'Engage in hobbies that bring you joy.'
+                ]
+            },
+            {
+                title: 'Stress Reduction Exercises',
+                items: [
+                    'Deep breathing exercises: Breathe slowly and deeply to calm the mind.',
+                    'Meditation: Try meditating for a few minutes daily.',
+                    'Yoga: Practice yoga poses that help relax the body and mind.',
+                    'Walking: A daily 30-minute walk can reduce stress.',
+                    'Listening to music: Calming music can help soothe the mind.'
+                ]
+            }
+        ];
+
+
+        function updateContent(lang) {
+            const currentLangData = reportData.languages[lang];
+
+            // Update static texts
+            document.getElementById('appTitle').textContent = currentLangData.appTitle;
+            document.getElementById('appSubtitle').textContent = currentLangData.appSubtitle;
+            document.querySelector('.language-toggle-button').textContent = currentLangData.toggleLangButton;
+            document.getElementById('downloadButtonText').textContent = currentLangData.downloadButtonText;
+            
+            document.getElementById('tabButtonDashboard').textContent = currentLangData.tabDashboard;
+            document.getElementById('tabButtonMealPlan').textContent = currentLangData.tabMealPlan;
+            document.getElementById('tabButtonFoodCategories').textContent = currentLangData.tabFoodCategories;
+            document.getElementById('tabButtonAvoidFood').textContent = currentLangData.tabAvoidFood;
+            document.getElementById('tabButton15DayPlan').textContent = currentLangData.tab15DayPlan;
+            document.getElementById('tabButtonConsistentPlan').textContent = currentLangData.tabConsistentPlan;
+            document.getElementById('tabButtonMentalHealth').textContent = currentLangData.tabMentalHealth;
+            document.getElementById('tabButtonGuidelines').textContent = currentLangData.tabGuidelines;
+
+            document.getElementById('patientDetailsTitle').textContent = currentLangData.patientDetailsTitle;
+            document.getElementById('dietaryGoalsTitle').textContent = currentLangData.dietaryGoalsTitle;
+            document.getElementById('chartCaption').textContent = currentLangData.chartCaption;
+            document.getElementById('mainIntroTitle').textContent = currentLangData.mainIntroTitle;
+            document.getElementById('rawTextDashboardButtonText').textContent = currentLangData.rawTextButtonText;
+            document.getElementById('rawImageDashboardButtonText').textContent = currentLangData.rawImageButtonText;
+            
+            document.getElementById('mealPlanSectionTitle').textContent = currentLangData.mealPlanSectionTitle;
+            document.getElementById('mealPlanSectionDescription').textContent = currentLangData.mealPlanSectionDescription;
+            document.getElementById('rawTextMealPlanButtonText').textContent = currentLangData.rawTextButtonText;
+            document.getElementById('rawImageMealPlanButtonText').textContent = currentLangData.rawImageButtonText;
+
+            document.getElementById('foodCategoriesSectionTitle').textContent = currentLangData.foodCategoriesSectionTitle;
+            document.getElementById('foodCategoriesSectionDescription').textContent = currentLangData.foodCategoriesSectionDescription;
+            document.getElementById('foodSearch').placeholder = currentLangData.foodSearchPlaceholder;
+            document.getElementById('rawTextFoodCategoriesButtonText').textContent = currentLangData.rawTextButtonText;
+            document.getElementById('rawImageFoodCategoriesButtonText').textContent = currentLangData.rawImageButtonText;
+
+            document.getElementById('avoidFoodSectionTitle').textContent = currentLangData.avoidFoodSectionTitle;
+            document.getElementById('avoidFoodSectionDescription').textContent = currentLangData.avoidFoodSectionDescription;
+
+            document.getElementById('dayPlanSectionTitle').textContent = currentLangData.dayPlanSectionTitle;
+            document.getElementById('dayPlanSectionDescription').textContent = currentLangData.dayPlanSectionDescription;
+            document.getElementById('dayPlanDisclaimer').textContent = currentLangData.dayPlanDisclaimer;
+            document.getElementById('dayPlanDisclaimerContent').textContent = currentLangData.dayPlanDisclaimerContent;
+
+            document.getElementById('consistentPlanSectionTitle').textContent = currentLangData.consistentPlanSectionTitle;
+            document.getElementById('consistentPlanSectionDescription').textContent = currentLangData.consistentPlanSectionDescription;
+            document.getElementById('consistentPlanDisclaimer').textContent = currentLangData.consistentPlanDisclaimer;
+            document.getElementById('consistentPlanDisclaimerContent').textContent = currentLangData.consistentPlanDisclaimerContent;
+
+            document.getElementById('mentalHealthSectionTitle').textContent = currentLangData.mentalHealthSectionTitle;
+            document.getElementById('mentalHealthSectionDescription').textContent = currentLangData.mentalHealthSectionDescription;
+            document.getElementById('mentalHealthDisclaimer').textContent = currentLangData.mentalHealthDisclaimer;
+            document.getElementById('mentalHealthDisclaimerContent').textContent = currentLangData.mentalHealthDisclaimerContent;
+
+
+            document.getElementById('guidelinesSectionTitle').textContent = currentLangData.guidelinesSectionTitle;
+            document.getElementById('guidelinesSectionDescription').textContent = currentLangData.guidelinesSectionDescription;
+            document.getElementById('rawTextGuidelinesButtonText').textContent = currentLangData.rawTextButtonText;
+            document.getElementById('rawImageGuidelinesButtonText').textContent = currentLangData.rawImageButtonText;
+
+            document.getElementById('footerText1').textContent = currentLangData.footerText1;
+            document.getElementById('footerText2').textContent = currentLangData.footerText2;
+
+            // Re-populate dynamic content
+            populatePatientDetails(lang);
+            populateDietaryGoals(lang);
+            populateMealPlan(lang);
+            populateFoodCategories(lang);
+            populateAvoidFood(lang); // New call
+            populate15DayPlan(lang);
+            populateConsistentPlan(lang); // New call
+            populateMentalHealth(lang); // New call
+            populateGuidelines(lang);
+            
+            // Re-create chart for updated labels
+            createGoalsChart(lang);
+        }
+
+        function toggleLanguage() {
+            reportData.currentLang = reportData.currentLang === 'ta' ? 'en' : 'ta';
+            updateContent(reportData.currentLang);
+        }
+
+        function changeTab(tabId) {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => button.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`button[onclick="changeTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        function populatePatientDetails(lang) {
+            const container = document.getElementById('patientDetails');
+            const langData = reportData.languages[lang];
+            container.innerHTML = langData.patientDetails.map(detail => `
+                <div class="flex justify-between items-center">
+                    <span class="font-medium text-gray-600">${detail.label}:</span>
+                    <span class="font-semibold text-gray-900">${detail.value}</span>
+                </div>
+            `).join('');
+        }
+        
+        let goalsChartInstance = null; // To store the chart instance
+
+        function populateDietaryGoals(lang) {
+            const container = document.getElementById('dietaryGoals');
+            const langData = reportData.languages[lang];
+            container.innerHTML = Object.keys(langData.dietaryGoals).map(key => `
+                <div class="flex justify-between items-center">
+                    <span class="font-medium text-gray-600">${key}:</span>
+                    <span class="font-semibold text-gray-900">${langData.dietaryGoals[key]} ${langData.goalUnits[key]}</span>
+                </div>
+            `).join('');
+            document.getElementById('mainIntro').textContent = langData.mainIntro;
+        }
+
+        function createGoalsChart(lang) {
+            const ctx = document.getElementById('goalsChart').getContext('2d');
+            const langData = reportData.languages[lang];
+            const goals = langData.dietaryGoals;
+            const units = langData.goalUnits;
+
+            if (goalsChartInstance) {
+                goalsChartInstance.destroy(); // Destroy existing chart before creating a new one
+            }
+
+            goalsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(goals),
+                    datasets: [{
+                        label: langData.dietaryGoalsTitle,
+                        data: Object.values(goals),
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(16, 185, 129, 0.6)',
+                            'rgba(239, 68, 68, 0.6)',
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(239, 68, 68, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `${context.parsed.y} ${units[context.label]}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        function populateMealPlan(lang) {
+            const container = document.getElementById('mealPlanContainer');
+            const langData = reportData.languages[lang];
+            container.innerHTML = langData.mealPlan.map(meal => `
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <h4 class="font-bold text-lg text-blue-800 mb-3">${meal.time}</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        ${meal.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+        
+        function populateFoodCategories(lang) {
+            const container = document.getElementById('foodCategoriesContainer');
+            const langData = reportData.languages[lang];
+            container.innerHTML = langData.foodCategories.map(category => `
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">${category.title}</h4>
+                    <p class="text-sm text-gray-500 mb-4">${category.description}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${category.sections.map(section => `
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <h5 class="font-semibold text-gray-700 mb-3">${section.title}</h5>
+                                <ul class="food-list space-y-1 text-sm">
+                                    ${section.items.map(item => `<li class="p-1">${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateAvoidFood(lang) {
+            const container = document.getElementById('avoidFoodContainer');
+            const langData = reportData.languages[lang];
+            const avoidFoodSection = langData.foodCategories.find(cat => cat.title === (lang === 'ta' ? 'தவிர்க்க வேண்டியவை' : 'Foods to Avoid'));
+            
+            if (avoidFoodSection && avoidFoodSection.sections.length > 0) {
+                container.innerHTML = `
+                    <div class="bg-red-50 rounded-xl p-6">
+                        <h4 class="font-semibold text-red-800 mb-3">${avoidFoodSection.sections[0].title}</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            ${avoidFoodSection.sections[0].items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<p class="text-gray-600">No data available for foods to avoid.</p>`;
+            }
+        }
+
+        function populate15DayPlan(lang) {
+            const container = document.getElementById('dayPlanContainer');
+            const langData = reportData.languages[lang];
+            const dayPlanSource = lang === 'ta' ? reportData.dayPlanData : reportData.languages.en.dayPlanData;
+            
+            container.innerHTML = dayPlanSource.map(dayEntry => `
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <h4 class="font-bold text-lg text-blue-800 mb-4">${langData.dayLabels[dayEntry.day - 1]}</h4>
+                    <div class="space-y-4">
+                        ${dayEntry.meals.map(meal => `
+                            <div class="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                                <p class="font-medium text-gray-700">${langData.mealTimeLabels[meal.time] || meal.time}: <span class="font-normal">${meal.food}</span></p>
+                                <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                                    <li>${langData.mealDetailsLabels.calories}: ${meal.calories}</li>
+                                    <li>${langData.mealDetailsLabels.description}: ${meal.description}</li>
+                                    <li>${langData.mealDetailsLabels.quantity}: ${meal.quantity}</li>
+                                </ul>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateConsistentPlan(lang) {
+            const container = document.getElementById('consistentPlanContainer');
+            const langData = reportData.languages[lang];
+            const consistentPlanSource = lang === 'ta' ? reportData.languages.ta.consistentDailyPlan : reportData.languages.en.consistentDailyPlan;
+
+            container.innerHTML = `
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <h4 class="font-bold text-lg text-blue-800 mb-4">${langData.dayLabels[0]} (தினசரி மாதிரி)</h4>
+                    <div class="space-y-4">
+                        ${consistentPlanSource.map(meal => `
+                            <div class="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                                <p class="font-medium text-gray-700">${langData.mealTimeLabels[meal.time] || meal.time}: <span class="font-normal">${meal.food}</span></p>
+                                <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                                    <li>${langData.mealDetailsLabels.calories}: ${meal.calories}</li>
+                                    <li>${langData.mealDetailsLabels.description}: ${meal.description}</li>
+                                    <li>${langData.mealDetailsLabels.quantity}: ${meal.quantity}</li>
+                                </ul>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function populateMentalHealth(lang) {
+            const container = document.getElementById('mentalHealthContainer');
+            const langData = reportData.languages[lang];
+            const mentalHealthSource = lang === 'ta' ? reportData.languages.ta.mentalHealthContent : reportData.languages.en.mentalHealthContent;
+
+            container.innerHTML = mentalHealthSource.map(section => `
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <h4 class="font-bold text-lg text-blue-800 mb-3">${section.title}</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        ${section.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function populateGuidelines(lang) {
+            const notesContainer = document.getElementById('generalNotes');
+            const recipesContainer = document.getElementById('recipesContainer');
+            
+            const { guidelines, recipes } = reportData.languages[lang];
+            
+            let guidelinesHTML = `
+                <div class="bg-blue-50 rounded-xl p-6 space-y-4">
+                    <h4 class="text-xl font-semibold text-blue-800">${guidelines.notesTitle}</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        ${guidelines.notes.map(note => `<li>${note}</li>`).join('')}
+                    </ul>
+                    <h4 class="text-xl font-semibold text-blue-800 pt-4">${guidelines.potassiumRemovalTitle}</h4>
+                     <ul class="list-decimal list-inside space-y-2 text-gray-700">
+                        ${guidelines.potassiumRemoval.map(step => `<li>${step}</li>`).join('')}
+                    </ul>
+                     <h4 class="text-xl font-semibold text-blue-800 pt-4">${guidelines.proteinExchangeTitle}</h4>
+                     <div class="space-y-3">
+                        ${guidelines.proteinExchanges.map(ex => `
+                            <div>
+                                <p class="font-medium text-gray-800">${ex.item}:</p>
+                                <ul class="list-disc list-inside ml-4 text-gray-700">
+                                    ${ex.options.map(opt => `<li>${opt}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `).join('')}
+                     </div>
+                </div>
+            `;
+            notesContainer.innerHTML = guidelinesHTML;
+
+            let recipesHTML = `
+                <div class="space-y-6">
+                    ${recipes.map(recipe => `
+                        <div class="bg-green-50 rounded-xl p-6">
+                            <h4 class="text-xl font-semibold text-green-800">${recipe.title}</h4>
+                            <div class="mt-4">
+                                <h5 class="font-semibold text-gray-700 mb-2">தேவையான பொருட்கள்:</h5>
+                                <ul class="list-disc list-inside text-gray-600">
+                                    ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                                </ul>
+                                <h5 class="font-semibold text-gray-700 mt-4 mb-2">செய்முறை:</h5>
+                                <ol class="list-decimal list-inside text-gray-600 space-y-1">
+                                    ${recipe.method.map(step => `<li>${step}</li>`).join('')}
+                                </ol>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            recipesContainer.innerHTML = recipesHTML;
+        }
+
+        function filterFoodLists() {
+            const input = document.getElementById('foodSearch');
+            const filter = input.value.toLowerCase();
+            const foodLists = document.querySelectorAll('.food-list');
+
+            foodLists.forEach(list => {
+                const items = list.getElementsByTagName('li');
+                for (let i = 0; i < items.length; i++) {
+                    const txtValue = items[i].textContent || items[i].innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        items[i].style.display = "";
+                    } else {
+                        items[i].style.display = "none";
+                    }
+                }
+            });
+        }
+
+        function toggleRawContent(containerId, contentType) {
+            const container = document.getElementById(containerId);
+            const button = container.previousElementSibling.querySelector(`button[onclick*="${containerId}"]`);
+            const buttonTextSpan = button.querySelector('span:last-child');
+            const iconSpan = button.querySelector('.toggle-icon');
+
+            // Hide all other raw content containers in the current tab
+            const currentTabId = document.querySelector('.tab-content.active').id;
+            const allRawContainersInTab = document.querySelectorAll(`#${currentTabId} .raw-content-container`);
+            allRawContainersInTab.forEach(otherContainer => {
+                if (otherContainer.id !== containerId) {
+                    otherContainer.style.display = 'none';
+                    const otherButton = otherContainer.previousElementSibling.querySelector(`button[onclick*="${otherContainer.id}"]`);
+                    if (otherButton) {
+                        const otherButtonTextSpan = otherButton.querySelector('span:last-child');
+                        const otherIconSpan = otherButton.querySelector('.toggle-icon');
+                        if (otherContainer.classList.contains('raw-text-content')) {
+                            otherButtonTextSpan.textContent = reportData.languages[reportData.currentLang].rawTextButtonText;
+                            otherIconSpan.textContent = "📄";
+                        } else {
+                            otherButtonTextSpan.textContent = reportData.languages[reportData.currentLang].rawImageButtonText;
+                            otherIconSpan.textContent = "🖼️";
+                        }
+                    }
+                }
+            });
+
+            if (container.style.display === "block") {
+                container.style.display = "none";
+                if (contentType === 'text') {
+                    iconSpan.textContent = "📄";
+                    buttonTextSpan.textContent = reportData.languages[reportData.currentLang].rawTextButtonText;
+                } else {
+                    iconSpan.textContent = "🖼️";
+                    buttonTextSpan.textContent = reportData.languages[reportData.currentLang].rawImageButtonText;
+                }
+            } else {
+                container.style.display = "block";
+                if (contentType === 'text') {
+                    iconSpan.textContent = "✖️";
+                    buttonTextSpan.textContent = reportData.languages[reportData.currentLang].rawTextButtonText;
+                } else {
+                    iconSpan.textContent = "✖️";
+                    buttonTextSpan.textContent = reportData.languages[reportData.currentLang].rawImageButtonText;
+                }
+            }
+        }
+        
+        window.onload = () => {
+            // Initial render in Tamil
+            updateContent(reportData.currentLang);
+
+            // Populate raw text containers (these are language-independent and always show the source text)
+            document.querySelector('#rawTextDashboardContainer .raw-text-content').textContent = reportData.rawTextContent.dashboard;
+            document.querySelector('#rawTextMealPlanContainer .raw-text-content').textContent = reportData.rawTextContent.meal_plan;
+            document.querySelector('#rawTextFoodCategoriesContainer .raw-text-content').textContent = reportData.rawTextContent.food_categories;
+            document.querySelector('#rawTextGuidelinesContainer .raw-text-content').textContent = reportData.rawTextContent.guidelines;
+
+            // Populate raw image containers
+            const rawImageDashboardContainer = document.getElementById('rawImageDashboardContainer');
+            reportData.rawImageContent.dashboard.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Original document page';
+                rawImageDashboardContainer.appendChild(img);
+            });
+
+            const rawImageMealPlanContainer = document.getElementById('rawImageMealPlanContainer');
+            reportData.rawImageContent.meal_plan.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Original document page';
+                rawImageMealPlanContainer.appendChild(img);
+            });
+
+            const rawImageFoodCategoriesContainer = document.getElementById('rawImageFoodCategoriesContainer');
+            reportData.rawImageContent.food_categories.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Original document page';
+                rawImageFoodCategoriesContainer.appendChild(img);
+            });
+
+            const rawImageGuidelinesContainer = document.getElementById('rawImageGuidelinesContainer');
+            reportData.rawImageContent.guidelines.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Original document page';
+                rawImageGuidelinesContainer.appendChild(img);
+            });
+        };
+    </script>
+</body>
+</html>
+
